@@ -27,20 +27,20 @@
 
 
           <div class="header"><span class="carta-preta">R</span><span class="carta-branca">E</span><span class="carta-preta">V</span><span class="carta-branca">E</span><span class="carta-preta">R</span><span class="carta-branca">S</span><span class="carta-preta">I</span></div>
-          <div class="main-container">
-            <dir class="contâiner-página-principal">
-                <button class="botoes-opcoes" onmousedown="beep.play()" id="single-player">Single Player</button>
-                <button class="botoes-opcoes" onmousedown="beep.play()"id="2-players">2 Players</button>
+          <div class="container-principal">
+            <dir class="container-pagina-principal">
+                <button class="botoes-opcoes" onmousedown="beep.play()" id="single-player">Jogador Único</button>
+                <button class="botoes-opcoes" onmousedown="beep.play()"id="2-players">2 Jogadores</button>
                 <button class="botoes-opcoes" onmousedown="beep.play()"id="demo">Demo</button>
             </dir>
 
         </div>
 
 
-        <div class="contâiner-pontuacao">
-            <div class="pontuação-contêiner interno">
+        <div class="container-pontuacao">
+            <div class="pontuacao-container interno">
                 <div class="nome" id="nome-jogador">AI - Black</div>
-                <div class="tile-container">
+                <div class="titulo-container">
                     <div class="glow" id="glow-1">
                         <span></span>
                         <span></span>
@@ -48,16 +48,16 @@
                         <span></span>
 
                     </div>
-                    <div class="score-tile score-black">
+                    <div class="titulo-placar placar-preto">
                         <div class="score" id="black-score">2</div>
                     </div>
                 </div>
 
 
             </div>
-            <div class="pontuação-contêiner interno">
-                <div class="nome" id="bot-name">AI - White</div>
-                <div class="tile-container">
+            <div class="pontuacao-container interno">
+                <div class="nome" id="bot-nome">AI - White</div>
+                <div class="titulo-container">
                     <div class="glow" id="glow-2">
                         <span></span>
                         <span></span>
@@ -65,20 +65,20 @@
                         <span></span>
 
                     </div>
-                    <div class="score-tile score-white">
-                        <div class="score" id="white-score">2</div>
+                    <div class="titulo-placar placar-branco">
+                        <div class="score" id="placar-branco">2</div>
                     </div>
                 </div>
 
             </div>
         </div>
 
-        <div class="dark-shroud">
-            <div class="win-lose-draw">You Win!</div>
-            <div class="result-container">
-                <button class="name result-botoes-opcoes" id="stay" onmousedown="beep.play()" onclick="takeOffShroud()">Stay</button>
-                <button class="name result-botoes-opcoes" id="restart" onmousedown="beep.play()" onclick="restart()">Restart</button>
-                <button class="name result-botoes-opcoes" id="menu" onmousedown="beep.play()" onclick="initAllBackToMainPage()">Menu</button>
+        <div class="blindagem-escura">
+            <div class="ganha-perde-empata">Você venceu!</div>
+            <div class="container-de-resultado">
+                <button class="name resultado-botoes-opcoes" id="permanecer" onmousedown="beep.play()" onclick="takeOffShroud()">Permanecer</button>
+                <button class="name resultado-botoes-opcoes" id="recomecar" onmousedown="beep.play()" onclick="restart()">Recomeçar</button>
+                <button class="name resultado-botoes-opcoes" id="menu" onmousedown="beep.play()" onclick="initAllBackToMainPage()">Menu</button>
             </div>
 
         </div>

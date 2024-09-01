@@ -16,7 +16,7 @@ var jogador2 = "AI - White";
 
 
 var blackScore = document.getElementById("black-score");
-var whiteScore = document.getElementById("white-score");
+var whiteScore = document.getElementById("placar-branco");
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,8 +66,8 @@ var adicionarBloco = function(event) {
         ////////////////////////////////////////////////////////
 
 
-        //check any move left///////////////////////////
-        //updated getSym as next sym to play//////////
+        //verifique qualquer movimento restante///////////////////////////
+        //getSym atualizado como o próximo sym a ser reproduzido//////////
         getSym = contador % 2 === 0 ? "W" : "B"
         console.log(getSym + "turn");
         var slots = verificarSlots(getSym);
@@ -117,8 +117,6 @@ var adicionarBloco = function(event) {
 
 
         ///////////////////////////////////////////////////
-
-
 
         //modo bot ligado e desligado
 
@@ -789,7 +787,7 @@ var aiTurn = function() {
         ////////////////////////////////////////////////
         ContagemDePecas();
 
-        /////////Check anymore playable empty square
+        /////////Verifique mais quadrados vazios jogáveis
         getSym = contador % 2 === 0 ? "W" : "B"
         console.log(getSym + "turn");
         var slots = verificarSlots(getSym);
@@ -837,8 +835,8 @@ var aiTurn = function() {
         ////////////////////////////////////////////////////////
 
 
-        //check any move left///////////////////////////
-        //updated getSym as next sym to play//////////
+        //verifique qualquer movimento restante///////////////////////////
+        //getSym atualizado como próximo sym a ser reproduzido//////////
 
 
 
@@ -1048,7 +1046,7 @@ var allBoardInitialisation = function(noclick = false) {
     }
     createBoardArray();
     initialize();
-    document.querySelector(".score-container").style.visibility = "visible";
+    document.querySelector(".container-pontuacao").style.visibility = "visible";
 
     if (demo) {
         dualBotMode = setInterval(aiTurn, 2000);
@@ -1063,7 +1061,7 @@ var tilePlaceSound = function() {
 }
 
 var createBoard = function() {
-    var container = document.querySelector(".main-container");
+    var container = document.querySelector(".container-principal");
     var boardContainer = document.createElement("div");
     boardContainer.setAttribute("class", "main-board");
     var boardFrame = document.createElement("div");
@@ -1120,7 +1118,7 @@ var createBoard = function() {
 }
 
 var lastMoveDisplayCreator = function(){
-    var mainContainer = document.querySelector(".main-container");
+    var mainContainer = document.querySelector(".container-principal");
     var createContainer = document.createElement("div");
     createContainer.setAttribute("class","last-move-display-container");
     mainContainer.appendChild(createContainer);
@@ -1146,15 +1144,14 @@ var atualizarUltimoMov = function(sym,x,y){
     lastMovePosition.innerHTML = String.fromCharCode(65+y)+(x+1);
     newMove.appendChild(lastMovePosition);
 
-    // getLastMoveContainer.appendChild(newMove);
     getLastMoveContainer.insertBefore(newMove,getLastMoveContainer.childNodes[0]);
 }
 
 var askPlayerInfoContainer = function(mode) {
-    var mainPageContainer = document.querySelector(".main-page-container")
+    var mainPageContainer = document.querySelector(".container-pagina-principal")
 
     var player1 = document.createElement("div");
-    player1.innerHTML = "Player 1";
+    player1.innerHTML = "Jogador 1";
     player1.setAttribute("class", "name main-player");
 
     var player1Input = document.createElement("input");
@@ -1172,7 +1169,7 @@ var askPlayerInfoContainer = function(mode) {
 
     if (mode === "2") {
         var player2 = document.createElement("div");
-        player2.innerHTML = "Player 2";
+        player2.innerHTML = "Jogador 2";
         player2.setAttribute("class", "name main-player player2");
 
         var player2Input = document.createElement("input");
@@ -1198,7 +1195,7 @@ var askPlayerInfoContainer = function(mode) {
 }
 
 var clearMainPageContainer = function() {
-    var mainPageContainer = document.querySelector(".main-page-container")
+    var mainPageContainer = document.querySelector(".container-pagina-principal")
     while (mainPageContainer.firstChild) {
         mainPageContainer.removeChild(mainPageContainer.firstChild);
 
@@ -1206,7 +1203,7 @@ var clearMainPageContainer = function() {
 }
 
 var removeMainPageContainer = function() {
-    var mainContainer = document.querySelector(".main-container")
+    var mainContainer = document.querySelector(".container-principal")
     while (mainContainer.firstChild) {
         mainContainer.removeChild(mainContainer.firstChild);
     }
@@ -1225,7 +1222,7 @@ var preStartGame = function(mode) {
                 document.getElementById("nome-jogador").innerHTML = "Guest-1"
                 jogador1 = "Guest-1";
             } else {
-                document.getElementById("player-name").innerHTML = takeName1;
+                document.getElementById("nome-jogador").innerHTML = takeName1;
                 jogador1 = takeName1;
             }
             botMode = true;
@@ -1241,18 +1238,18 @@ var preStartGame = function(mode) {
             var takeName2 = document.getElementById("player-2-input").value;
 
             if (takeName1 === "") {
-                document.getElementById("player-name").innerHTML = "Guest-1"
+                document.getElementById("nome-jogador").innerHTML = "Guest-1"
                 jogador1 = "Guest-1";
             } else {
-                document.getElementById("player-name").innerHTML = takeName1;
+                document.getElementById("nome-jogador").innerHTML = takeName1;
                 jogador1 = takeName1;
             }
 
             if (takeName2 === "") {
-                document.getElementById("bot-name").innerHTML = "Guest-2";
+                document.getElementById("bot-nome").innerHTML = "Guest-2";
                 jogador2 = "Guest-2";
             } else {
-                document.getElementById("bot-name").innerHTML = takeName2;
+                document.getElementById("bot-nome").innerHTML = takeName2;
                 jogador2 = takeName2;
             }
             removeMainPageContainer();
@@ -1297,7 +1294,7 @@ var startBackAllClicks = function() {
 }
 
 var checkWin = function() {
-    var getWinDisplay = document.querySelector(".win-lose-draw");
+    var getWinDisplay = document.querySelector(".ganha-perde-empata");
 
     var getResultContainer = document.querySelector(".resultContainer");
 
@@ -1306,33 +1303,29 @@ var checkWin = function() {
         getWinDisplay.innerHTML = `${jogador1} Win!`;
         startAnimations();
 
-        // getWinDisplay.style.animation = "fadein 2s";
 
     } else if (parseInt(blackScore.innerHTML) === parseInt(whiteScore.innerHTML)) {
 
-        getWinDisplay.innerHTML = "It is a Draw!!";
+        getWinDisplay.innerHTML = "É um empate!!";
         startAnimations();
-        // getWinDisplay.style.animation = "fadein 2s";
-        // getResultContainer.style.animation ="fadein 2s 2s forwards";
+
     } else if (parseInt(blackScore.innerHTML) < parseInt(whiteScore.innerHTML)) {
 
         getWinDisplay.innerHTML = `${jogador2} Win!`;
         startAnimations();
-        // getWinDisplay.style.animation = "fadein 2s";
-        // getResultContainer.style.animation ="fadein 2s 2s forwards";
     }
 }
 
 var startAnimations = function() {
-    var getDarkShroud = document.querySelector(".dark-shroud");
-    var getWinDisplay = document.querySelector(".win-lose-draw");
+    var getDarkShroud = document.querySelector(".blindagem-escura");
+    var getWinDisplay = document.querySelector(".ganha-perde-empata");
 
     getDarkShroud.style.visibility = "visible";
     getDarkShroud.style.animation = "2s fadein forwards";
     getWinDisplay.style.animation = "2s fadein forwards";
 
     setTimeout(function() {
-        var getResultContainer = document.querySelector(".result-container");
+        var getResultContainer = document.querySelector(".container-de-resultado");
         getResultContainer.style.animation = "2s fadein forwards";
     }, 2000);
 }
@@ -1340,20 +1333,20 @@ var startAnimations = function() {
 
 
 var takeOffShroud = function() {
-    document.querySelector(".dark-shroud").style.visibility = "hidden";
-    document.querySelector(".dark-shroud").style.opacity = "0";
-    document.querySelector(".dark-shroud").style.animation = null;
-    document.querySelector(".win-lose-draw").style.animation = null;
-    document.querySelector(".win-lose-draw").style.opacity = "0";
-    document.querySelector(".result-container").style.animation = null;
-    document.querySelector(".result-container").style.opacity = "0";
+    document.querySelector(".blindagem-escura").style.visibility = "hidden";
+    document.querySelector(".blindagem-escura").style.opacity = "0";
+    document.querySelector(".blindagem-escura").style.animation = null;
+    document.querySelector(".ganha-perde-empata").style.animation = null;
+    document.querySelector(".ganha-perde-empata").style.opacity = "0";
+    document.querySelector(".container-de-resultado").style.animation = null;
+    document.querySelector(".container-de-resultado").style.opacity = "0";
 
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////
 //////////////////////                                      /////////////////////
-//////////////////////    DOCUMENT ON LOAD                   ////////////////////
+//////////////////////    DOCUMENTO EM CARREGAMENTO         ///////////////////
 //////////////////////                                       ////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -1362,7 +1355,7 @@ var restart = function() {
     if(demo){
         stopDualBotMode();
     }
-    var mainContainer = document.querySelector(".main-container");
+    var mainContainer = document.querySelector(".container-principal");
     while (mainContainer.firstChild) {
         mainContainer.removeChild(mainContainer.firstChild);
     }
@@ -1403,9 +1396,9 @@ var initAllBackToMainPage = function() {
     stopGlow2();
     mode = null;
     stopDualBotMode();
-    document.getElementById("player-name").innerHTML = "AI - White";
-    document.getElementById("bot-name").innerHTML = "AI - Black";
-    var mainContainer = document.querySelector(".main-container");
+    document.getElementById("nome-jogador").innerHTML = "AI - White";
+    document.getElementById("bot-nome").innerHTML = "AI - Black";
+    var mainContainer = document.querySelector(".container-principal");
     while (mainContainer.firstChild) {
         mainContainer.removeChild(mainContainer.firstChild);
     }
@@ -1414,12 +1407,12 @@ var initAllBackToMainPage = function() {
     demo = false;
     singlePlayerMode = false;
     contador = 1;
-    document.querySelector(".score-container").style.visibility = "hidden";
+    document.querySelector(".container-pontuacao").style.visibility = "hidden";
     blackScore.innerHTML = "2";
     whiteScore.innerHTML = "2";
 
     var mainPageContainer = document.createElement("div");
-    mainPageContainer.setAttribute("class", "main-page-container");
+    mainPageContainer.setAttribute("class", "container-pagina-principal");
     var button1 = document.createElement("button");
     button1.setAttribute("class", "selections");
     button1.setAttribute("onmousedown", "beep.play()");
@@ -1474,13 +1467,13 @@ var takeOutSettingsButton = function(){
 }
 
 var takeOutSettings = function(){
-    var getDarkShroud = document.querySelector(".dark-shroud");
+    var getDarkShroud = document.querySelector(".blindagem-escura");
 
     getDarkShroud.style.visibility = "visible";
     getDarkShroud.style.opacity="1";
 
 
-    var getResultContainer = document.querySelector(".result-container");
+    var getResultContainer = document.querySelector(".container-de-resultado");
     getResultContainer.style.opacity = "1";
 
 }
