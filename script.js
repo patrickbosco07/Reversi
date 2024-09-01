@@ -1,8 +1,8 @@
-console.log("Hello  ")
+console.log("Salve gurizada ")
 var boardLength = 8;
-var counter = 1;
+var contador = 1;
 var boardArray = [];
-var directionToGo = [];
+var direcaoParaIr = [];
 var botMode = false;
 var demo = false;
 var dualBotMode = null;
@@ -10,8 +10,8 @@ var botTurn = false;
 var singlePlayerMode = false;
 var predictorArray = [];
 var mode = null;
-var player1Name = "AI - Black";
-var player2Name = "AI - White";
+var jogador1 = "AI - Black";
+var jogador2 = "AI - White";
 
 
 
@@ -21,85 +21,84 @@ var whiteScore = document.getElementById("white-score");
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
-////                            Player Click
+////                            Clique do jogador
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 
-var addTile = function(event) {
+var adicionarBloco = function(event) {
     if (event instanceof Element){
         event.target = event
     }
     var getX = parseInt(event.target.getAttribute("x-axis"));
     var getY = parseInt(event.target.getAttribute("y-axis"));
-    var getSym = counter % 2 === 0 ? "W" : "B"
+    var getSym = contador % 2 === 0 ? "W" : "B"
 
 
 
-    if (checkOKtoPlace(getSym, getX, getY)) {
-        removePredictionDots();
+    if (verificarOKparaColocar(getSym, getX, getY)) {
+        removerPontosDePrevisao();
 
         var aTile = document.createElement("div");
         event.target.classList.add("test");
         if (getSym === "W") {
             aTile.setAttribute("class", "white-tiles");
             boardArray[getY][getX] = getSym;
-            updateLastMove(getSym,getX,getY);
+            atualizarUltimoMov(getSym,getX,getY);
 
         } else {
             aTile.setAttribute("class", "black-tiles");
             boardArray[getY][getX] = getSym;
-            updateLastMove(getSym,getX,getY);
+            atualizarUltimoMov(getSym,getX,getY);
         }
-        changeRespectiveTiles(event.target, getSym, getX, getY);
+        alterarRespectiveTiles(event.target, getSym, getX, getY);
         tilePlaceSound();
-        counter++;
+        contador++;
         event.target.appendChild(aTile);
-        event.target.removeEventListener("click", addTile);
-        // event.target.removeEventListener("click", tilePlaceSound);
+        event.target.removeEventListener("click", adicionarBloco);
 
 
 
         ////////////////////////////////////////////////////////////
-        ///////////     Do Tiles Counting           ///////////////
+        ///////////     Contagem de peças           ///////////////
         ////////////////////////////////////////////////////////////
-        tilesCounting();
+        ContagemDePecas();
         ////////////////////////////////////////////////////////
 
 
         //check any move left///////////////////////////
         //updated getSym as next sym to play//////////
-        getSym = counter % 2 === 0 ? "W" : "B"
+        getSym = contador % 2 === 0 ? "W" : "B"
         console.log(getSym + "turn");
-        var slots = checkSlots(getSym);
+        var slots = verificarSlots(getSym);
 
 
 
 
         if(slots.empty > 0){
             if (slots.movable > 0) {
-                console.log(getSym + "still can");
+                console.log(getSym + "ainda pode");
                 glowchange(getSym);
 
                 if (singlePlayerMode) {
                     tempStopAllClicks();
                 } else {
-                    predictionDots(getSym);
+                    previsaoDots(getSym);
                 }
                 if (botMode) {
 
                     setTimeout(aiTurn, 2000);
                 }
             }else{
-                console.log(getSym + "no place to move, pass");
-                counter++;
-                getSym = counter % 2 === 0 ? "W" : "B"
+                console.log(getSym + "nenhum lugar para se mover, passar");
+                contador++;
+                getSym = contador % 2 === 0 ? "W" : "B"
                 console.log(getSym + "turn");
-                var slots = checkSlots(getSym);
+                var slots = verificarSlots(getSym);
                 if(slots.movable>0){
-                    predictionDots(getSym)
+                    previsaoDots(getSym)
                 }else{
-                    console.log(getSym + "also cannot, end game ");
+                    console.log(getSym + "também não pode, fim do jogo ");
                     stopGlow1();
                     stopGlow2();
                     botMode = false;
@@ -108,7 +107,7 @@ var addTile = function(event) {
                 }
             }
         }else{
-            console.log(getSym + "cannot d");
+            console.log(getSym + "não pode d");
             stopGlow1();
             stopGlow2();
             botMode = false;
@@ -121,24 +120,24 @@ var addTile = function(event) {
 
 
 
-        //bot mode on and off
+        //modo bot ligado e desligado
 
 
     } else {
-        console.log("Invalid Move")
+        console.log("Movimento inválido")
         invalid.play();
     }
 
 }
 
-var checkSlots = function(sym){
+var verificarSlots = function(sym){
     let emptySlots = 0;
     let roughtCount = 0;
     for (var y = 0; y < boardLength; y++) {
         for (var x = 0; x < boardLength; x++) {
             if (boardArray[y][x] === null) {
                 emptySlots++;
-                if (checkOKtoPlace(sym, x, y)) {
+                if (verificarOKparaColocar(sym, x, y)) {
                     roughtCount++;
                 }
             }
@@ -149,7 +148,7 @@ var checkSlots = function(sym){
     return {empty:emptySlots,movable:roughtCount}
 }
 
-var tilesCounting = function(){
+var ContagemDePecas = function(){
     var whiteCount = 0;
     var blackCount = 0;
     for (var i = 0; i < boardLength; i++) {
@@ -166,12 +165,12 @@ var tilesCounting = function(){
     whiteScore.innerHTML = whiteCount;
 }
 
-var predictionDots = function(sym) {
+var previsaoDots = function(sym) {
     predictorArray = [];
     for (var y = 0; y < boardLength; y++) {
         for (var x = 0; x < boardLength; x++) {
             if (boardArray[y][x] === null) {
-                if (checkOKtoPlace(sym, x, y)) {
+                if (verificarOKparaColocar(sym, x, y)) {
                     var createPredictor = document.createElement("div");
                     createPredictor.setAttribute("class", "predictor");
                     createPredictor.setAttribute("x-axis", x);
@@ -189,10 +188,10 @@ var predictionDots = function(sym) {
 
 var runATile = function(something){
     console.log(something.parentNode)
-    addTile(something.parentNode)
+    adicionarBloco(something.parentNode)
 }
 
-var removePredictionDots = function(sym) {
+var removerPontosDePrevisao = function(sym) {
     for (var i = 0; i < predictorArray.length; i++) {
         var target = document.getElementById(predictorArray[i]);
         target.removeChild(target.firstChild);
@@ -260,8 +259,7 @@ var initialize = function() {
             boardArray[getY][getX] = "B"
         }
         getSquare.appendChild(aTile);
-        getSquare.removeEventListener("click", addTile);
-        // getSquare.removeEventListener("click", tilePlaceSound);
+        getSquare.removeEventListener("click", adicionarBloco);
         aCounter++;
     }
     for (var i = secondTileId; i > secondTileId - 2; i--) {
@@ -279,18 +277,17 @@ var initialize = function() {
             boardArray[getY][getX] = "B"
         }
         getSquare.appendChild(aTile);
-        getSquare.removeEventListener("click", addTile);
-        // getSquare.removeEventListener("click", tilePlaceSound);
+        getSquare.removeEventListener("click", adicionarBloco);
         aCounter++;
     }
 
 }
 
-var checkOKtoPlace = function(sym, x, y) {
+var verificarOKparaColocar = function(sym, x, y) {
 
     var arr = [checkTopLeft(sym, x, y), checkTop(sym, x, y), checkTopRight(sym, x, y), checkRight(sym, x, y), checkBottomRight(sym, x, y), checkBottom(sym, x, y), checkBottomLeft(sym, x, y), checkLeft(sym, x, y)];
 
-    directionToGo = arr;
+    direcaoParaIr = arr;
 
     if (arr.includes(true)) {
         return true
@@ -301,7 +298,7 @@ var checkOKtoPlace = function(sym, x, y) {
 
 
 
-//check top left
+//verifique o canto superior esquerdo
 var checkTopLeft = function(sym, x, y) {
     if (x < 2 || y < 2) {
         return false;
@@ -329,7 +326,7 @@ var checkTopLeft = function(sym, x, y) {
     }
 
 }
-//check top
+//verificar topo
 var checkTop = function(sym, x, y) {
     if (y < 2) {
         return false
@@ -354,7 +351,7 @@ var checkTop = function(sym, x, y) {
         }
     }
 }
-//check top right
+//verifique no canto superior direito
 var checkTopRight = function(sym, x, y) {
     if (y < 2 || x > (boardLength - 3)) {
         return false
@@ -379,7 +376,7 @@ var checkTopRight = function(sym, x, y) {
         }
     }
 }
-//check right
+//verifique certo
 var checkRight = function(sym, x, y) {
     if (x > (boardLength - 3)) {
         return false
@@ -405,7 +402,7 @@ var checkRight = function(sym, x, y) {
     }
 }
 
-//check bottom right
+//verifique canto inferior direito
 var checkBottomRight = function(sym, x, y) {
     if (x > (boardLength - 3) || y > (boardLength - 3)) {
         return false
@@ -431,7 +428,7 @@ var checkBottomRight = function(sym, x, y) {
         }
     }
 }
-//check bottom
+//verificar fundo
 var checkBottom = function(sym, x, y) {
     if (y > (boardLength - 3)) {
         return false
@@ -458,7 +455,7 @@ var checkBottom = function(sym, x, y) {
     }
 }
 
-//check bottom left
+//verifique no canto inferior esquerdo
 var checkBottomLeft = function(sym, x, y) {
     if (y > (boardLength - 3) || x < 2) {
         return false
@@ -484,7 +481,7 @@ var checkBottomLeft = function(sym, x, y) {
     }
 }
 
-//check left
+//cheque à esquerda
 var checkLeft = function(sym, x, y) {
     if (x < 2) {
         return false
@@ -510,7 +507,7 @@ var checkLeft = function(sym, x, y) {
     }
 }
 
-var changeRespectiveTiles = function(target, sym, x, y) {
+var alterarRespectiveTiles = function(target, sym, x, y) {
     var topLeftSettle = false;
     var topSettle = false;
     var topRightSettle = false;
@@ -524,7 +521,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
 
         switch (i) {
             case 0:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!topLeftSettle) {
                         if (boardArray[y - 1][x - 1] !== null) {
                             var a = 1;
@@ -545,7 +542,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
                 }
                 break;
             case 1:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
 
                     while (!topSettle) {
                         if (boardArray[y - 1][x] !== null) {
@@ -567,7 +564,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
                 }
                 break;
             case 2:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
 
                     while (!topRightSettle) {
 
@@ -596,7 +593,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
                 }
                 break;
             case 3:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!rightSettle) {
                         if (boardArray[y][x + 1] !== null) {
                             var a = 1;
@@ -617,7 +614,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
                 }
                 break;
             case 4:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!bottomRightSettle) {
                         if (boardArray[y + 1][x + 1] !== null) {
                             var a = 1;
@@ -639,7 +636,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
                 }
                 break;
             case 5:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!bottomSettle) {
                         if (boardArray[y + 1][x] !== null) {
                             var a = 1;
@@ -661,7 +658,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
                 }
                 break;
             case 6:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
 
                     while (!bottomLeftSettle) {
                         if (boardArray[y + 1][x - 1] !== null) {
@@ -684,7 +681,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
                 }
                 break;
             case 7:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!leftSettle) {
                         if (boardArray[y][x - 1] !== null) {
                             var a = 1;
@@ -712,7 +709,7 @@ var changeRespectiveTiles = function(target, sym, x, y) {
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//////                AI Mode
+//////                Modo AI
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -721,19 +718,19 @@ var aiTurn = function() {
 
 
     if (botMode) {
-        var getSym = counter % 2 === 0 ? "W" : "B"
+        var getSym = contador % 2 === 0 ? "W" : "B"
         var objArray = [];
         var maxChanged = 0;
         var getX = null;
         var getY = null;
         var roughtCount = 0;
 
-        ////////////collect all playable square and total changes that it will make,save it in an array of object///////////
+        ////////////colete todos os quadrados jogáveis ​​e as alterações totais que ele fará, salve-os em uma matriz de objetos///////////
         for (var y = 0; y < boardLength; y++) {
             for (var x = 0; x < boardLength; x++) {
                 if (boardArray[y][x] === null) {
 
-                    if (checkOKtoPlace(getSym, x, y)) {
+                    if (verificarOKparaColocar(getSym, x, y)) {
 
                         accumulator(objArray, getSym, x, y);
 
@@ -742,14 +739,14 @@ var aiTurn = function() {
 
             }
         }
-        //check which square gives max change
+        //verifique qual quadrado dá a maior mudança
         for (i = 0; i < objArray.length; i++) {
             if (objArray[i].total >= maxChanged) {
                 maxChanged = objArray[i].total
             }
         }
 
-        //take x and y axis of max change
+        //pegue os eixos x e y da mudança máxima
         var randomArray = [];
         for (j = 0; j < objArray.length; j++) {
             if (objArray[j].total === maxChanged) {
@@ -763,63 +760,63 @@ var aiTurn = function() {
         ///////////////////////////////////////////////////////////////////////////////////
 
 
-        ////////////do the move///////////////////////////////////////////////////
-        checkOKtoPlace(getSym, getX, getY);
+        ////////////faça o movimento///////////////////////////////////////////////////
+        verificarOKparaColocar(getSym, getX, getY);
         var getTarget = document.getElementById(getY * boardLength + getX);
         var aTile = document.createElement("div");
         getTarget.classList.add("test");
         if (getSym === "W") {
             aTile.setAttribute("class", "white-tiles");
             boardArray[getY][getX] = getSym;
-            updateLastMove(getSym,getX,getY);
+            atualizarUltimoMov(getSym,getX,getY);
 
         } else {
             aTile.setAttribute("class", "black-tiles");
             boardArray[getY][getX] = getSym;
-            updateLastMove(getSym,getX,getY);
+            atualizarUltimoMov(getSym,getX,getY);
         }
-        changeRespectiveTiles(getTarget, getSym, getX, getY);
+        alterarRespectiveTiles(getTarget, getSym, getX, getY);
         tilePlaceSound();
-        counter++;
+        contador++;
         getTarget.appendChild(aTile);
-        getTarget.removeEventListener("click", addTile);
+        getTarget.removeEventListener("click", adicionarBloco);
         getTarget.removeEventListener("click", tilePlaceSound);
         ////////////////////////////////////////////////////////////////////////////
 
 
 
-        /////////////Count whole board and update tiles
+        /////////////Conte o tabuleiro inteiro e atualize as peças
         ////////////////////////////////////////////////
-        tilesCounting();
+        ContagemDePecas();
 
         /////////Check anymore playable empty square
-        getSym = counter % 2 === 0 ? "W" : "B"
+        getSym = contador % 2 === 0 ? "W" : "B"
         console.log(getSym + "turn");
-        var slots = checkSlots(getSym);
+        var slots = verificarSlots(getSym);
 
         if (slots.empty > 0) {
             if (slots.movable > 0) {
-                console.log(getSym + "still can");
+                console.log(getSym + "ainda pode");
                 glowchange(getSym);
 
                 if (singlePlayerMode) {
                     startBackAllClicks();
-                    predictionDots(getSym);
+                    previsaoDots(getSym);
                 }
             }else{
-                console.log(getSym + "no place to move, pass");
-                counter++;
-                getSym = counter % 2 === 0 ? "W" : "B"
+                console.log(getSym + "nenhum lugar para se mover, passar");
+                contador++;
+                getSym = contador % 2 === 0 ? "W" : "B"
                 console.log(getSym + "turn");
-                var slots = checkSlots(getSym);
+                var slots = verificarSlots(getSym);
                 if(slots.movable>0){
-                    console.log(getSym + "still can");
+                    console.log(getSym + "ainda pode");
                     if(singlePlayerMode){
                         setTimeout(aiTurn,2000);
                     }
 
                 }else{
-                    console.log(getSym + "also cannot, end game ");
+                    console.log(getSym + "também não pode, fim do jogo ");
                     stopGlow1();
                     stopGlow2();
                     botMode = false;
@@ -829,7 +826,7 @@ var aiTurn = function() {
 
 
         } else {
-            console.log(getSym + "cannot d");
+            console.log(getSym + "não pode d");
             stopGlow1();
             stopGlow2();
             botMode = false;
@@ -873,7 +870,7 @@ var accumulator = function(arr, sym, x, y) {
     for (i = 0; i < boardLength; i++) {
         switch (i) {
             case 0:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!topLeftSettle) {
                         if (boardArray[y - 1][x - 1] !== null) {
                             var i = 1;
@@ -890,7 +887,7 @@ var accumulator = function(arr, sym, x, y) {
                 }
                 break;
             case 1:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!topSettle) {
                         if (boardArray[y - 1][x] !== null) {
                             var i = 1;
@@ -907,7 +904,7 @@ var accumulator = function(arr, sym, x, y) {
                 }
                 break;
             case 2:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!topRightSettle) {
                         if (boardArray[y - 1][x + 1] !== null) {
                             var i = 1;
@@ -925,7 +922,7 @@ var accumulator = function(arr, sym, x, y) {
                 }
                 break;
             case 3:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!rightSettle) {
                         if (boardArray[y][x + 1] !== null) {
                             var i = 1;
@@ -942,7 +939,7 @@ var accumulator = function(arr, sym, x, y) {
                 }
                 break;
             case 4:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!bottomRightSettle) {
                         if (boardArray[y + 1][x + 1] !== null) {
                             var i = 1;
@@ -961,7 +958,7 @@ var accumulator = function(arr, sym, x, y) {
                 }
                 break;
             case 5:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!bottomSettle) {
                         if (boardArray[y + 1][x] !== null) {
                             var i = 1;
@@ -980,7 +977,7 @@ var accumulator = function(arr, sym, x, y) {
                 }
                 break;
             case 6:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!bottomLeftSettle) {
                         if (boardArray[y + 1][x - 1] !== null) {
                             var i = 1;
@@ -998,7 +995,7 @@ var accumulator = function(arr, sym, x, y) {
                 }
                 break;
             case 7:
-                if (directionToGo[i]) {
+                if (direcaoParaIr[i]) {
                     while (!leftSettle) {
                         if (boardArray[y][x - 1] !== null) {
                             var i = 1;
@@ -1043,7 +1040,7 @@ var allBoardInitialisation = function(noclick = false) {
             if (demo) {
                 console.log("no clicking");
             } else {
-                getSquares[k].addEventListener("click", addTile);
+                getSquares[k].addEventListener("click", adicionarBloco);
 
             }
             k++;
@@ -1130,7 +1127,7 @@ var lastMoveDisplayCreator = function(){
 
 }
 
-var updateLastMove = function(sym,x,y){
+var atualizarUltimoMov = function(sym,x,y){
     var getLastMoveContainer = document.querySelector(".last-move-display-container");
 
     var newMove = document.createElement("div");
@@ -1225,19 +1222,19 @@ var preStartGame = function(mode) {
             var takeName1 = document.getElementById("player-1-input").value;
 
             if (takeName1 === "") {
-                document.getElementById("player-name").innerHTML = "Guest-1"
-                player1Name = "Guest-1";
+                document.getElementById("nome-jogador").innerHTML = "Guest-1"
+                jogador1 = "Guest-1";
             } else {
                 document.getElementById("player-name").innerHTML = takeName1;
-                player1Name = takeName1;
+                jogador1 = takeName1;
             }
             botMode = true;
             removeMainPageContainer();
             allBoardInitialisation();
-            var getSym = counter % 2 === 0 ? "W" : "B"
+            var getSym = contador % 2 === 0 ? "W" : "B"
             startGlow1();
             stopGlow2();
-            predictionDots(getSym);
+            previsaoDots(getSym);
         } else if (mode === "2") {
 
             var takeName1 = document.getElementById("player-1-input").value;
@@ -1245,28 +1242,28 @@ var preStartGame = function(mode) {
 
             if (takeName1 === "") {
                 document.getElementById("player-name").innerHTML = "Guest-1"
-                player1Name = "Guest-1";
+                jogador1 = "Guest-1";
             } else {
                 document.getElementById("player-name").innerHTML = takeName1;
-                player1Name = takeName1;
+                jogador1 = takeName1;
             }
 
             if (takeName2 === "") {
                 document.getElementById("bot-name").innerHTML = "Guest-2";
-                player2Name = "Guest-2";
+                jogador2 = "Guest-2";
             } else {
                 document.getElementById("bot-name").innerHTML = takeName2;
-                player2Name = takeName2;
+                jogador2 = takeName2;
             }
             removeMainPageContainer();
             allBoardInitialisation();
             startGlow1();
             stopGlow2();
-            var getSym = counter % 2 === 0 ? "W" : "B"
-            predictionDots(getSym);
+            var getSym = contador % 2 === 0 ? "W" : "B"
+            previsaoDots(getSym);
         } else if (mode === "demo") {
-            player1Name = "AI - Black"
-            player2Name = "AI - White"
+            jogador1 = "AI - Black"
+            jogador2 = "AI - White"
             demo = true;
             removeMainPageContainer();
             allBoardInitialisation();
@@ -1280,7 +1277,7 @@ var tempStopAllClicks = function() {
     for (var y = 0; y < boardLength; y++) {
         for (var x = 0; x < boardLength; x++) {
             if (boardArray[y][x] === null) {
-                document.getElementById(y * boardLength + x).removeEventListener("click", addTile);
+                document.getElementById(y * boardLength + x).removeEventListener("click", adicionarBloco);
             }
 
         }
@@ -1291,7 +1288,7 @@ var startBackAllClicks = function() {
     for (var y = 0; y < boardLength; y++) {
         for (var x = 0; x < boardLength; x++) {
             if (boardArray[y][x] === null) {
-                document.getElementById(y * boardLength + x).addEventListener("click", addTile);
+                document.getElementById(y * boardLength + x).addEventListener("click", adicionarBloco);
             }
 
         }
@@ -1306,7 +1303,7 @@ var checkWin = function() {
 
     if (parseInt(blackScore.innerHTML) > parseInt(whiteScore.innerHTML)) {
 
-        getWinDisplay.innerHTML = `${player1Name} Win!`;
+        getWinDisplay.innerHTML = `${jogador1} Win!`;
         startAnimations();
 
         // getWinDisplay.style.animation = "fadein 2s";
@@ -1319,7 +1316,7 @@ var checkWin = function() {
         // getResultContainer.style.animation ="fadein 2s 2s forwards";
     } else if (parseInt(blackScore.innerHTML) < parseInt(whiteScore.innerHTML)) {
 
-        getWinDisplay.innerHTML = `${player2Name} Win!`;
+        getWinDisplay.innerHTML = `${jogador2} Win!`;
         startAnimations();
         // getWinDisplay.style.animation = "fadein 2s";
         // getResultContainer.style.animation ="fadein 2s 2s forwards";
@@ -1371,21 +1368,21 @@ var restart = function() {
     }
 
 
-    counter = 1;
-    var getSym = counter % 2 === 0 ? "W" : "B"
+    contador = 1;
+    var getSym = contador % 2 === 0 ? "W" : "B"
     blackScore.innerHTML = "2";
     whiteScore.innerHTML = "2";
     if (mode === "single") {
         botMode = true;
-        var getSym = counter % 2 === 0 ? "W" : "B";
+        var getSym = contador % 2 === 0 ? "W" : "B";
 
         allBoardInitialisation();
-        predictionDots(getSym);
+        previsaoDots(getSym);
     } else if (mode === "2") {
-        var getSym = counter % 2 === 0 ? "W" : "B";
+        var getSym = contador % 2 === 0 ? "W" : "B";
 
         allBoardInitialisation();
-        predictionDots(getSym);
+        previsaoDots(getSym);
 
     } else {
         startGlow1();
@@ -1416,7 +1413,7 @@ var initAllBackToMainPage = function() {
     botMode = false;
     demo = false;
     singlePlayerMode = false;
-    counter = 1;
+    contador = 1;
     document.querySelector(".score-container").style.visibility = "hidden";
     blackScore.innerHTML = "2";
     whiteScore.innerHTML = "2";
